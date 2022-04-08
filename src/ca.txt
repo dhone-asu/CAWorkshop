@@ -1,0 +1,12 @@
+blocksize 3;
+background white;
+rules
+    [black black black] = [_ white _];
+    [black black white] = [_ white _];
+    [black white black] = [_ white _];
+    [black white white] = [_ black _];
+    [white black black] = [_ white _];
+    [white black white] = [_ black _];
+    [white white black] = [_ black _];
+    [white white white] = [_ white _];
+end rules
