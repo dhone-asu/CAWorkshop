@@ -3,6 +3,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -47,6 +48,7 @@ public class ViewDialog {
 
         Button btnRun = new Button("Run");
         flowPane.getChildren().add(btnRun);
+        btnRun.setOnAction(event -> handleRunAction(event));
 
 
         MenuBar menuBar = new MenuBar();
@@ -58,5 +60,12 @@ public class ViewDialog {
         fileMenu.getItems().addAll(fileOpen, fileSep1, fileExit);
         menuBar.getMenus().add(fileMenu);
         borderPane.setTop(menuBar);
+    }
+
+    public void handleRunAction(ActionEvent event)
+    {
+        Image i = CAWorkshop.ca.createImage();
+
+        iv.setImage(i);
     }
 }
