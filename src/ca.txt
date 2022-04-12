@@ -1,4 +1,4 @@
-  blocksize   3
+blocksize 3
 background white
 colors black white
 dim 800 500
@@ -12,4 +12,4 @@ rules
     [white black white] = [_ black _]
     [white white black] = [_ black _]
     [white white white] = [_ white _]
-end rules
+endrules

@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Handler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -58,6 +59,26 @@ public class CellularAutomaton {
         this.rules = rules;
     }
 
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setInitialPixels(List<Pixel> initialPixels) {
+        this.initialPixels = initialPixels;
+    }
+
+    public void setBlockSize(int blockSize) {
+        this.blockSize = blockSize;
+    }
+
+    public void setColors(List<Color> colors) {
+        this.colors = colors;
+    }
+
     public int getWidth() {
         return width;
     }
@@ -78,40 +99,27 @@ public class CellularAutomaton {
         this.background = background;
     }
 
-    public boolean readFromFile()
+    public boolean read(InputStream is)
+    {
+        CAReader reader = new CAReader(this);
+
+        reader.read(is);
+        return true;
+    }
+
+    public boolean readFromFile(File file)
     {
         try {
-            FileInputStream is = new FileInputStream("ca.txt");
-            Pattern keywordPattern = Pattern.compile("\\s*(?<keyword>\\S*)\\s*");
-            String file = new String(is.readAllBytes());
-            List<String> lines = file.lines().toList();
+            FileInputStream is = new FileInputStream(file);
+            CAReader reader = new CAReader(this);
+            reader.read(is);
 
-            for (String str : lines)
-            {
-                Matcher matcher = keywordPattern.matcher(str);
-
-                while (matcher.find())
-                {
-                    System.out.printf("\"%s\"\n",matcher.group("keyword"));
-                }
-
-            }
-            /*System.out.println(file);
-            Pattern pattern = Pattern.compile("(\\w*\\s*)*");
-            Matcher m = pattern.matcher(file);
-            m.find();
-            int n = m.groupCount();
-            System.out.printf("%d\n", n);
-            for (int i = 0; i < n; i++)
-            {
-                System.out.printf("\"%s\"\n", m.group(i));
-            }*/
+            return true;
         }
         catch (Exception e)
         {
             return false;
         }
-        return true;
     }
 
     Rule findRule(Block block)
@@ -162,5 +170,4 @@ public class CellularAutomaton {
         }
         return image;
     }
-
 }

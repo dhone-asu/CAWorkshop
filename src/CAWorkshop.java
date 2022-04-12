@@ -2,6 +2,7 @@ import javafx.application.Application;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.List;
 
 /*
@@ -31,7 +32,7 @@ public class CAWorkshop extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         ca = new CellularAutomaton(List.of(Color.BLACK,Color.WHITE), Color.WHITE,3,600,400);
-        ca.readFromFile();
+        ca.readFromFile(new File("ca.txt"));
         Rule rule1 = new Rule(new Block(Color.BLACK, Color.BLACK, Color.BLACK),
                 new Block(Color.TRANSPARENT, Color.WHITE, Color.TRANSPARENT));
         Rule rule2 = new Rule(new Block(Color.BLACK, Color.BLACK, Color.WHITE),
