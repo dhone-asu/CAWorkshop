@@ -1,8 +1,8 @@
 blocksize 3
 background white
 colors black white
-dim 800 500
-setpixel 400 0 black
+dim 600 400
+setpixel 300 0 black
 rules
     [black black black] = [_ white _]
     [black black white] = [_ white _]

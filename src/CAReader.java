@@ -1,6 +1,8 @@
 import javafx.scene.paint.Color;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +47,7 @@ setpixel 400 0 black
     {
         try {
             Pattern keywordPattern = Pattern.compile("^\\s*(?<keyword>\\w+)\\s*(?<args>.*)$");
+
             String file = new String(is.readAllBytes());
             List<String> lines = file.lines().toList();
 
@@ -85,14 +88,21 @@ setpixel 400 0 black
         }
         catch (Exception e)
         {
-            System.out.printf("Exception: %s\n", e.getMessage());
+            System.out.printf("Exception: %s %s\n", e.getMessage(), e.getCause());
             return false;
         }
     }
 
     private void handleBlockSize(String keyword, String args)
     {
-        System.out.printf("Handling: %s %s\n", keyword,args);
+        Pattern pattern = Pattern.compile("\\s*(?<size>\\d+)\\s*.*");
+        Matcher matcher = pattern.matcher(args);
+
+        if (matcher.matches())
+        {
+            int blockSize = Integer.parseInt(matcher.group("size"));
+            ca.setBlockSize(blockSize);
+        }
     }
 
 
@@ -133,7 +143,15 @@ setpixel 400 0 black
 
     private void handleSetPixel(String keyword, String args)
     {
+        Pattern pattern = Pattern.compile("\\s*(?<x>\\d+)\\s+(?<y>\\d+)\\s+(?<color>\\w+)\\s*");
+        Matcher matcher = pattern.matcher(args);
 
+        if (matcher.matches()) {
+            int x = Integer.parseInt(matcher.group("x"));
+            int y = Integer.parseInt(matcher.group("y"));
+            Color color = Color.valueOf(matcher.group("color"));
+            ca.getInitialPixels().add(new Pixel(x, y, color));
+        }
     }
 
 
@@ -141,12 +159,22 @@ setpixel 400 0 black
     private void handleRules(List<String> rules)
     {
         Pattern rulePattern = Pattern.compile("\\s*\\[(?<left>.*)\\]\\s*=\\s*\\[(?<right>.*)\\]\\s*");
+        //Pattern blockPattern = Pattern.compile("\\s*(?<color>\\S+)");
 
-        for (String rule : rules) {
-            Matcher matcher = rulePattern.matcher(rule);
-            if (matcher.matches())
+        for (String ruleStr : rules) {
+            Matcher ruleMatcher = rulePattern.matcher(ruleStr);
+            if (ruleMatcher.matches())
             {
-                System.out.printf("%s, %s\n", matcher.group("left"), matcher.group("right"));
+                System.out.printf("%s, %s\n", ruleMatcher.group("left"), ruleMatcher.group("right"));
+
+                if (ruleMatcher.matches()) {
+                    String left = ruleMatcher.group("left");
+                    String right = ruleMatcher.group("right");
+                    Block leftBlock = Block.parseBlock(left);
+                    Block rightBlock = Block.parseBlock(right);
+                    Rule rule = new Rule(leftBlock, rightBlock);
+                    ca.getRules().add(rule);
+                }
             }
         }
     }

@@ -1,7 +1,8 @@
 import javafx.scene.paint.Color;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Block{
     int size;
@@ -27,6 +28,15 @@ public class Block{
         }
     }
 
+    public Block(List<Color> colors)
+    {
+        setSize(colors.size());
+        for (int i = 0; i < colors.size(); i++)
+        {
+            pixels[i] = colors.get(i);
+        }
+    }
+
     public Color getPixel(int i)
     {
         return pixels[i];
@@ -44,6 +54,26 @@ public class Block{
 
     public int getSize() {
         return size;
+    }
+
+
+    public static Block parseBlock(String str)
+    {
+        Pattern blockPattern = Pattern.compile("\\s*(?<color>\\S+)");
+        Matcher blockMatcher = blockPattern.matcher(str);
+
+        List<Color> colors = new ArrayList<>();
+        while (blockMatcher.find())
+        {
+            String colorStr = blockMatcher.group("color");
+            if (colorStr.equals("_"))
+                colors.add(Color.TRANSPARENT);
+            else
+                colors.add(Color.valueOf(colorStr));
+        }
+
+        Block block = new Block(colors);
+        return block;
     }
 
     @Override

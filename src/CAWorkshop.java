@@ -31,7 +31,7 @@ public class CAWorkshop extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        ca = new CellularAutomaton(List.of(Color.BLACK,Color.WHITE), Color.WHITE,3,600,400);
+        /*ca = new CellularAutomaton(List.of(Color.BLACK,Color.WHITE), Color.WHITE,3,600,400);
         ca.readFromFile(new File("ca.txt"));
         Rule rule1 = new Rule(new Block(Color.BLACK, Color.BLACK, Color.BLACK),
                 new Block(Color.TRANSPARENT, Color.WHITE, Color.TRANSPARENT));
@@ -50,7 +50,15 @@ public class CAWorkshop extends Application {
         Rule rule8 = new Rule(new Block(Color.WHITE, Color.WHITE, Color.WHITE),
                 new Block(Color.TRANSPARENT, Color.WHITE, Color.TRANSPARENT));
         ca.getRules().addAll(List.of(rule1,rule2,rule3,rule4,rule5,rule6,rule7,rule8));
-        ca.getInitialPixels().add(new Pixel(ca.getWidth()/2, 0, Color.BLACK));
+        ca.getInitialPixels().add(new Pixel(ca.getWidth()/2, 0, Color.BLACK));*/
+        ca = new CellularAutomaton();
+        ca.readFromFile(new File("ca.txt"));
+
+        System.out.printf("Blocksize: %d", ca.blockSize);
+
+        for (Color c : ca.getColors()) {
+            System.out.printf("Color: %s\n",c.toString());
+        }
 
         /*ca = new CellularAutomaton(List.of(Color.BLUE, Color.RED, Color.WHITE), Color.WHITE, 2, 600, 400);
         Rule rule1 = new Rule(new Block(Color.BLUE, Color.BLUE), new Block(Color.RED, Color.RED));//

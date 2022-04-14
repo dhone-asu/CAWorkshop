@@ -24,12 +24,14 @@ public class CellularAutomaton {
     public CellularAutomaton()
     {
         rules = new ArrayList<>();
-        colors = new ArrayList<>(List.of(Color.BLACK, Color.WHITE));
+        //colors = new ArrayList<>(List.of(Color.BLACK, Color.WHITE));
+        colors = new ArrayList<>();
         background = Color.WHITE;
         blockSize = 3;
         height = 600;
         width = 400;
-        initialPixels = new ArrayList<>(List.of(new Pixel(width / 2, 0, Color.BLACK)));
+        //initialPixels = new ArrayList<>(List.of(new Pixel(width / 2, 0, Color.BLACK)));
+        initialPixels = new ArrayList<>();
     }
 
     public CellularAutomaton(List<Color> colors, Color background, int blockSize, int width, int height)
