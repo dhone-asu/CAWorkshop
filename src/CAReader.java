@@ -165,8 +165,6 @@ setpixel 400 0 black
             Matcher ruleMatcher = rulePattern.matcher(ruleStr);
             if (ruleMatcher.matches())
             {
-                System.out.printf("%s, %s\n", ruleMatcher.group("left"), ruleMatcher.group("right"));
-
                 if (ruleMatcher.matches()) {
                     String left = ruleMatcher.group("left");
                     String right = ruleMatcher.group("right");
