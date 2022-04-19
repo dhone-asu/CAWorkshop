@@ -11,9 +11,10 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.Locale;
+import java.nio.file.OpenOption;
+import java.nio.file.StandardOpenOption;
 
-public class ViewDialog {
+public class MainDialog {
     Stage stage;
     Scene scene;
     File scriptFile;
@@ -36,7 +37,7 @@ public class ViewDialog {
     }
 
 
-    public ViewDialog(Stage stage)
+    public MainDialog(Stage stage)
     {
         stage.setTitle("Cellular Automaton Workshop");
         this.stage = stage;
@@ -78,18 +79,23 @@ public class ViewDialog {
         Menu fileMenu = new Menu("File");
         MenuItem fileNew = new MenuItem("New");
         MenuItem fileOpen = new MenuItem("Open");
-        fileOpen.setOnAction(event -> handleOpenAction(event));
         MenuItem fileSave = new MenuItem("Save");
         MenuItem fileSaveAs = new MenuItem("Save As...");
         SeparatorMenuItem fileSep1 = new SeparatorMenuItem();
+        MenuItem fileClose = new MenuItem("Close");
+        SeparatorMenuItem fileSep2 = new SeparatorMenuItem();
         MenuItem fileExit = new MenuItem("Exit");
 
-        fileMenu.getItems().addAll(fileNew, fileOpen, fileSave, fileSaveAs, fileSep1, fileExit);
+        fileOpen.setOnAction(event -> handleOpenAction(event));
+        fileSave.setOnAction(event -> handleSaveAction(event));
+        fileClose.setOnAction(event -> handleCloseAction(event));
+
+        fileMenu.getItems().addAll(fileNew, fileOpen, fileSave, fileSaveAs, fileSep1, fileClose, fileSep2, fileExit);
         menuBar.getMenus().add(fileMenu);
         mainBorderPane.setTop(menuBar);
     }
 
-    public void handleRunAction(ActionEvent event)
+    private void handleRunAction(ActionEvent event)
     {
         if ((scriptFile != null) && (scriptFile.exists())) {
             cellularAutomaton = new CellularAutomaton();
@@ -101,26 +107,59 @@ public class ViewDialog {
         }
     }
 
-    public void handleOpenAction(ActionEvent event)
+    private void handleOpenAction(ActionEvent event)
+    {
+        FileChooser fileChooser = new FileChooser();
+        //fileChooser.setInitialDirectory();
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CA Workshop Files", "*.txt", "*.ca"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+        File file = fileChooser.showOpenDialog(stage);
+
+        if ((file != null) && (file.exists()))
+        {
+            scriptFile = file;
+            readScriptFromFile(scriptFile);
+        }
+    }
+
+    private void handleSaveAction(ActionEvent event)
+    {
+        if ((scriptFile != null) && (scriptFile.exists()))
+        {
+            try {
+                Files.writeString(scriptFile.toPath(), txtScript.getText(), StandardOpenOption.WRITE);
+            }
+            catch (IOException e)
+            {
+
+            }
+        }
+        else
+            handleSaveAsAction(event);
+    }
+
+    private void handleSaveAsAction(ActionEvent event)
     {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CA Workshop Files", "*.txt", "*.ca"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
-        File file = fileChooser.showOpenDialog(stage);
-        if ((file != null) && (file.exists()))
-        {
-            scriptFile = file;
-            updateTxtScript();
-        }
+        File file = fileChooser.showSaveDialog(stage);
     }
 
-    public void updateTxtScript()
+    private void handleCloseAction(ActionEvent event)
     {
-        if (scriptFile != null)
+        scriptFile = null;
+        txtScript.setText("");
+        imageView.setImage(null);
+    }
+
+    public void readScriptFromFile(File file)
+    {
+        if (file != null)
         {
             try
             {
-            txtScript.setText(Files.readString(scriptFile.toPath()));
+                txtScript.setText(Files.readString(file.toPath()));
             }
             catch (IOException e)
             {
