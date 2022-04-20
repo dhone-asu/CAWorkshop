@@ -1,0 +1,34 @@
+blocksize 3
+background white
+colors white black red
+dim 400 400
+setpixel 200 0 red
+rules
+	[white white white] = [_ white _]
+	[white white black] = [_ red _]
+	[white white red] = [_ red _]
+	[white black white] = [_ black  _]
+	[white black black] = [_ red  _]
+	[white black red] = [_ red  _]
+	[white red white] = [_ red  _]
+	[white red black] = [_ red  _]
+	[white red red] = [_ red  _]
+	[black white white] = [_ red  _]
+	[black white black] = [_ red  _]
+	[black white red] = [_ red  _]
+	[black black white] = [_ red  _]
+	[black black black] = [_ red  _]
+	[black black red] = [_ red  _]
+	[black red white] = [_ red  _]
+	[black red black] = [_ red  _]
+	[black red red] = [_ red  _]
+	[red white white] = [_ red  _]
+	[red white black] = [_ white  _]
+	[red white red] = [_ white  _]
+	[red black white] = [_ white  _]
+	[red black black] = [_ white  _]
+	[red black red] = [_ white  _]
+	[red red white] = [_ white  _]
+	[red red black] = [_ white _]
+	[red red red] = [_ white  _]
+endrules

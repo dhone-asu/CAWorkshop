@@ -108,7 +108,7 @@ setpixel 400 0 black
 
     private void handleBackground(String keyword, String args)
     {
-        Pattern pattern = Pattern.compile("\\s*(?<color>\\w+)\\s*.*");
+        Pattern pattern = Pattern.compile("\\s*(?<color>\\S+)\\s*.*");
         Matcher matcher = pattern.matcher(args);
         if (matcher.matches())
         {
@@ -118,7 +118,7 @@ setpixel 400 0 black
     }
     private void handleColors(String keyword, String args)
     {
-        Pattern pattern = Pattern.compile("\\s*(?<color>\\w+)");
+        Pattern pattern = Pattern.compile("\\s*(?<color>\\S+)");
         Matcher matcher = pattern.matcher(args);
 
         while (matcher.find())
@@ -143,7 +143,7 @@ setpixel 400 0 black
 
     private void handleSetPixel(String keyword, String args)
     {
-        Pattern pattern = Pattern.compile("\\s*(?<x>\\d+)\\s+(?<y>\\d+)\\s+(?<color>\\w+)\\s*");
+        Pattern pattern = Pattern.compile("\\s*(?<x>\\d+)\\s+(?<y>\\d+)\\s+(?<color>\\S+)\\s*");
         Matcher matcher = pattern.matcher(args);
 
         if (matcher.matches()) {

@@ -13,6 +13,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainDialog {
     Stage stage;
@@ -71,8 +75,11 @@ public class MainDialog {
 
 
         Button btnRun = new Button("Run");
-        flowPane.getChildren().add(btnRun);
         btnRun.setOnAction(event -> handleRunAction(event));
+
+        Button btnGenerateRules = new Button("Generate Rules");
+        btnGenerateRules.setOnAction(event -> handleGenerateAction(event));
+        flowPane.getChildren().addAll(btnRun,btnGenerateRules);
 
 
         MenuBar menuBar = new MenuBar();
@@ -95,16 +102,50 @@ public class MainDialog {
         mainBorderPane.setTop(menuBar);
     }
 
+    private void handleGenerateAction(ActionEvent event)
+    {
+        Pattern colorsStatementPattern = Pattern.compile("^colors\\s+(?<colors>.*)$",Pattern.MULTILINE);
+        Pattern blocksizeStatementPattern = Pattern.compile("^blocksize\\s+(?<blocksize>\\d+)$",Pattern.MULTILINE);
+        String str = txtScript.getText();
+        Matcher colorsStatementMatcher = colorsStatementPattern.matcher(str);
+        Matcher blocksizeStatementMatcher = blocksizeStatementPattern.matcher(str);
+        int blockSize = 0;
+
+        if (blocksizeStatementMatcher.find())
+        {
+            blockSize = Integer.parseInt(blocksizeStatementMatcher.group("blocksize"));
+        }
+
+        if (colorsStatementMatcher.find())
+        {
+            String blockStr = colorsStatementMatcher.group("colors");
+            Pattern blockPattern = Pattern.compile("\\s*(?<color>\\S+)");
+            Matcher blockMatcher = blockPattern.matcher(blockStr);
+            List<String> colors = new ArrayList<>();
+
+            while (blockMatcher.find())
+            {
+                String colorStr = blockMatcher.group("color");
+                colors.add(colorStr);
+            }
+
+            String ruleBlock = CAWriter.generateRuleBlock(blockSize, colors);
+            txtScript.setText(str + "\n" + ruleBlock);
+        }
+    }
+
     private void handleRunAction(ActionEvent event)
     {
-        if ((scriptFile != null) && (scriptFile.exists())) {
+        //if ((scriptFile != null) && (scriptFile.exists())) {
             cellularAutomaton = new CellularAutomaton();
             InputStream is = new ByteArrayInputStream(txtScript.getText().getBytes());
             cellularAutomaton.read(is);
+
+            System.out.printf("%d", cellularAutomaton.blockSize);
             Image i = cellularAutomaton.createImage();
 
             imageView.setImage(i);
-        }
+        //}
     }
 
     private void handleOpenAction(ActionEvent event)
