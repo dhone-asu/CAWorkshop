@@ -1,3 +1,4 @@
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -6,9 +7,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
@@ -60,6 +65,7 @@ public class MainDialog {
         splitPane.getItems().add(leftBorderPane);
 
         txtScript = new TextArea();
+        txtScript.setFont(Font.font("Monospaced", 14));
         leftBorderPane.setCenter(txtScript);
 
         FlowPane flowPane = new FlowPane();
@@ -88,6 +94,7 @@ public class MainDialog {
         MenuItem fileOpen = new MenuItem("Open");
         MenuItem fileSave = new MenuItem("Save");
         MenuItem fileSaveAs = new MenuItem("Save As...");
+        MenuItem fileExport = new MenuItem("Export Image...");
         SeparatorMenuItem fileSep1 = new SeparatorMenuItem();
         MenuItem fileClose = new MenuItem("Close");
         SeparatorMenuItem fileSep2 = new SeparatorMenuItem();
@@ -96,10 +103,44 @@ public class MainDialog {
         fileOpen.setOnAction(event -> handleOpenAction(event));
         fileSave.setOnAction(event -> handleSaveAction(event));
         fileClose.setOnAction(event -> handleCloseAction(event));
+        fileExport.setOnAction(event -> handleExportImage(event));
 
-        fileMenu.getItems().addAll(fileNew, fileOpen, fileSave, fileSaveAs, fileSep1, fileClose, fileSep2, fileExit);
+        fileMenu.getItems().addAll(fileNew, fileOpen, fileSave, fileSaveAs, fileExport, fileSep1,
+                fileClose, fileSep2, fileExit);
         menuBar.getMenus().add(fileMenu);
         mainBorderPane.setTop(menuBar);
+    }
+
+    private void handleExportImage(ActionEvent event)
+    {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("Portable Network Graphic", "*.png");
+        FileChooser.ExtensionFilter jpgFilter = new FileChooser.ExtensionFilter("JPEG", "*.jpg");
+        FileChooser.ExtensionFilter gifFilter = new FileChooser.ExtensionFilter("Graphic Interchange Format", "*.gif");
+        FileChooser.ExtensionFilter anyFilter = new FileChooser.ExtensionFilter("All Files", "*.*");
+        fileChooser.getExtensionFilters().addAll(pngFilter, jpgFilter, gifFilter, anyFilter);
+        File file = fileChooser.showSaveDialog(stage);
+        String format;
+        FileChooser.ExtensionFilter filter =  fileChooser.getSelectedExtensionFilter();
+        if (filter.equals(pngFilter))
+            format = "PNG";
+        else if (filter.equals(jpgFilter))
+            format = "JPG";
+        else if (filter.equals(gifFilter))
+            format = "GIF";
+        else
+            format = "PNG";
+        System.out.println(format);
+        try
+        {
+            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(imageView.getImage(), null);
+            ImageIO.write(bufferedImage, format, file);
+
+        }
+        catch (IOException e)
+        {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void handleGenerateAction(ActionEvent event)
