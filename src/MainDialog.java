@@ -196,10 +196,13 @@ public class MainDialog {
     private void handleAbout(ActionEvent event)
     {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText("About");
+        ImageView aboutIcon = new ImageView(new Image("file:resources/icon.png"));
+        aboutIcon.setFitWidth(128);
+        aboutIcon.setFitHeight(128);
+        alert.setHeaderText("Cellular Automaton Workshop");
+        alert.getDialogPane().setGraphic(aboutIcon);
         alert.setTitle("About Cellular Automaton Workshop");
-        alert.setContentText("Cellular Automaton Workshop\n" +
-                "Version 0.9.0\n" +
+        alert.setContentText("Version 0.9.0\n" +
                 "Author: Dennis Hone\n\n");
         alert.showAndWait();
     }
