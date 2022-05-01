@@ -8,7 +8,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -16,7 +15,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,19 +93,31 @@ public class MainDialog {
         MenuItem fileSave = new MenuItem("Save");
         MenuItem fileSaveAs = new MenuItem("Save As...");
         MenuItem fileExport = new MenuItem("Export Image...");
-        SeparatorMenuItem fileSep1 = new SeparatorMenuItem();
-        MenuItem fileClose = new MenuItem("Close");
-        SeparatorMenuItem fileSep2 = new SeparatorMenuItem();
+
+        SeparatorMenuItem fileSep = new SeparatorMenuItem();
         MenuItem fileExit = new MenuItem("Exit");
+
+        Menu scriptMenu = new Menu("Script");
+        MenuItem scriptRun = new MenuItem("Run");
+        MenuItem scriptGenerate = new MenuItem("Generate Rules");
+
+        scriptRun.setOnAction(event -> handleRunAction(event));
+        scriptGenerate.setOnAction(event -> handleGenerateAction(event));
+
+        scriptMenu.getItems().addAll(scriptRun,scriptGenerate);
+
+        Menu helpMenu = new Menu("Help");
+        MenuItem helpAbout = new MenuItem("About...");
+        helpMenu.getItems().addAll(helpAbout);
 
         fileOpen.setOnAction(event -> handleOpenAction(event));
         fileSave.setOnAction(event -> handleSaveAction(event));
-        fileClose.setOnAction(event -> handleCloseAction(event));
+        fileSaveAs.setOnAction(event -> handleSaveAsAction(event));
+        fileNew.setOnAction(event -> handleNewAction(event));
         fileExport.setOnAction(event -> handleExportImage(event));
 
-        fileMenu.getItems().addAll(fileNew, fileOpen, fileSave, fileSaveAs, fileExport, fileSep1,
-                fileClose, fileSep2, fileExit);
-        menuBar.getMenus().add(fileMenu);
+        fileMenu.getItems().addAll(fileNew, fileOpen, fileSave, fileSaveAs, fileExport, fileSep, fileExit);
+        menuBar.getMenus().addAll(fileMenu,scriptMenu,helpMenu);
         mainBorderPane.setTop(menuBar);
     }
 
@@ -177,7 +187,6 @@ public class MainDialog {
 
     private void handleRunAction(ActionEvent event)
     {
-        //if ((scriptFile != null) && (scriptFile.exists())) {
             cellularAutomaton = new CellularAutomaton();
             InputStream is = new ByteArrayInputStream(txtScript.getText().getBytes());
             cellularAutomaton.read(is);
@@ -186,13 +195,12 @@ public class MainDialog {
             Image i = cellularAutomaton.createImage();
 
             imageView.setImage(i);
-        //}
     }
 
     private void handleOpenAction(ActionEvent event)
     {
         FileChooser fileChooser = new FileChooser();
-        //fileChooser.setInitialDirectory();
+
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CA Workshop Files", "*.txt", "*.ca"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
         File file = fileChooser.showOpenDialog(stage);
@@ -208,13 +216,7 @@ public class MainDialog {
     {
         if ((scriptFile != null) && (scriptFile.exists()))
         {
-            try {
-                Files.writeString(scriptFile.toPath(), txtScript.getText(), StandardOpenOption.WRITE);
-            }
-            catch (IOException e)
-            {
-
-            }
+                saveScript(scriptFile);
         }
         else
             handleSaveAsAction(event);
@@ -226,9 +228,46 @@ public class MainDialog {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CA Workshop Files", "*.txt", "*.ca"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
         File file = fileChooser.showSaveDialog(stage);
+
+        if (file != null) {
+            if (file.exists()) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confirm Overwrite");
+                alert.setContentText(String.format("Are you sure you want to overwrite \"%s\"?", file.getName()));
+                if (alert.getResult() == ButtonType.OK) {
+                    saveScript(file);
+                    scriptFile = file;
+                }
+            } else {
+                saveScript(file);
+                scriptFile = file;
+            }
+        }
     }
 
-    private void handleCloseAction(ActionEvent event)
+    public boolean saveScript(File file)
+    {
+        if (file == null)
+            return false;
+
+        try {
+            if (!file.exists())
+                file.createNewFile();
+            if (file.canWrite()) {
+                Files.writeString(file.toPath(), txtScript.getText(), StandardOpenOption.WRITE);
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (IOException e)
+        {
+            System.out.println(String.format("Exception: %s\n", e.toString()));
+            return false;
+        }
+    }
+
+    private void handleNewAction(ActionEvent event)
     {
         scriptFile = null;
         txtScript.setText("");
@@ -245,7 +284,7 @@ public class MainDialog {
             }
             catch (IOException e)
             {
-
+                System.out.println(String.format("Exception: %s\n", e.toString()));
             }
         }
     }
