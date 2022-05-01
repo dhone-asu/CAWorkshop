@@ -1,3 +1,4 @@
+import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -83,6 +84,7 @@ public class MainDialog {
 
         Button btnGenerateRules = new Button("Generate Rules");
         btnGenerateRules.setOnAction(event -> handleGenerateAction(event));
+
         flowPane.getChildren().addAll(btnRun,btnGenerateRules);
 
 
@@ -93,31 +95,37 @@ public class MainDialog {
         MenuItem fileSave = new MenuItem("Save");
         MenuItem fileSaveAs = new MenuItem("Save As...");
         MenuItem fileExport = new MenuItem("Export Image...");
-
         SeparatorMenuItem fileSep = new SeparatorMenuItem();
         MenuItem fileExit = new MenuItem("Exit");
-
-        Menu scriptMenu = new Menu("Script");
-        MenuItem scriptRun = new MenuItem("Run");
-        MenuItem scriptGenerate = new MenuItem("Generate Rules");
-
-        scriptRun.setOnAction(event -> handleRunAction(event));
-        scriptGenerate.setOnAction(event -> handleGenerateAction(event));
-
-        scriptMenu.getItems().addAll(scriptRun,scriptGenerate);
-
-        Menu helpMenu = new Menu("Help");
-        MenuItem helpAbout = new MenuItem("About...");
-        helpMenu.getItems().addAll(helpAbout);
 
         fileOpen.setOnAction(event -> handleOpenAction(event));
         fileSave.setOnAction(event -> handleSaveAction(event));
         fileSaveAs.setOnAction(event -> handleSaveAsAction(event));
         fileNew.setOnAction(event -> handleNewAction(event));
         fileExport.setOnAction(event -> handleExportImage(event));
+        fileExit.setOnAction(event -> handleExit(event));
 
         fileMenu.getItems().addAll(fileNew, fileOpen, fileSave, fileSaveAs, fileExport, fileSep, fileExit);
+
+        Menu scriptMenu = new Menu("Script");
+        MenuItem scriptRun = new MenuItem("Run");
+        MenuItem scriptGenerate = new MenuItem("Generate Rules");
+        MenuItem scriptCleanUp = new MenuItem("Clean Up Rules");
+
+        scriptRun.setOnAction(event -> handleRunAction(event));
+        scriptGenerate.setOnAction(event -> handleGenerateAction(event));
+        scriptCleanUp.setOnAction(event -> handleCleanUp(event));
+
+        scriptMenu.getItems().addAll(scriptRun,scriptGenerate,scriptCleanUp);
+
+        Menu helpMenu = new Menu("Help");
+        MenuItem helpAbout = new MenuItem("About...");
+
+        helpAbout.setOnAction(event -> handleAbout(event));
+        helpMenu.getItems().addAll(helpAbout);
+
         menuBar.getMenus().addAll(fileMenu,scriptMenu,helpMenu);
+
         mainBorderPane.setTop(menuBar);
     }
 
@@ -151,6 +159,49 @@ public class MainDialog {
         {
             System.out.println(e.getMessage());
         }
+    }
+
+    private void handleExit(ActionEvent event)
+    {
+        stage.close();
+    }
+
+    private void handleCleanUp(ActionEvent event)
+    {
+        String str = txtScript.getText();
+        List<String> lines = str.lines().toList();
+        List<String> newLines = new ArrayList<>();
+        Pattern linePattern = Pattern.compile("\\s*\\[(?<left>.*)\\]\\s*=\\s*\\[(?<right>.*)\\]\\s*");
+        Pattern blankBlock = Pattern.compile("^(\\s|_)*$");
+
+        for (String line: lines)
+        {
+            Matcher matcher = linePattern.matcher(line);
+
+            if (matcher.matches())
+            {
+                String right = matcher.group("right");
+                Matcher blankBlockMatcher = blankBlock.matcher(right);
+                if (!blankBlockMatcher.matches())
+                {
+                    newLines.add(line);
+                }
+            }
+            else
+                newLines.add(line);
+        }
+        txtScript.setText(String.join("\n",newLines));
+    }
+
+    private void handleAbout(ActionEvent event)
+    {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText("About");
+        alert.setTitle("About Cellular Automaton Workshop");
+        alert.setContentText("Cellular Automaton Workshop\n" +
+                "Version 0.9.0\n" +
+                "Author: Dennis Hone\n\n");
+        alert.showAndWait();
     }
 
     private void handleGenerateAction(ActionEvent event)
@@ -191,7 +242,6 @@ public class MainDialog {
             InputStream is = new ByteArrayInputStream(txtScript.getText().getBytes());
             cellularAutomaton.read(is);
 
-            System.out.printf("%d", cellularAutomaton.blockSize);
             Image i = cellularAutomaton.createImage();
 
             imageView.setImage(i);
