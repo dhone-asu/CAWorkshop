@@ -25,13 +25,7 @@ public class CAReader {
         this.ca = ca;
         initKeywordActions();
     }
-/*
-blocksize 3
-background white
-colors black white
-dim 800 500
-setpixel 400 0 black
- */
+
     private void initKeywordActions()
     {
         keywordActions = new HashMap<>();
@@ -71,7 +65,7 @@ setpixel 400 0 black
                         for (j = start; j < lines.size(); j++)
                         {
                             if (lines.get(j).matches("^\\s*endrules\\s*$"))
-                                end = j-1;
+                                end = j;
                         }
                         if (end >= start)
                         {

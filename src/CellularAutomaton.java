@@ -28,7 +28,7 @@ public class CellularAutomaton {
         colors = new ArrayList<>();
         background = Color.WHITE;
         blockSize = 3;
-        height = 600;
+        height = 400;
         width = 400;
         //initialPixels = new ArrayList<>(List.of(new Pixel(width / 2, 0, Color.BLACK)));
         initialPixels = new ArrayList<>();
