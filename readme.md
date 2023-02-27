@@ -25,7 +25,7 @@ For example:
 
 ```[ black black black ] = [ _ white _ ]```  
 
-An example script and the image it generates is included below:
+An example script is included below:
 
 ```
 blocksize 3
