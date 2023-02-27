@@ -148,7 +148,6 @@ public class MainDialog {
             format = "GIF";
         else
             format = "PNG";
-        System.out.println(format);
         try
         {
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(imageView.getImage(), null);
